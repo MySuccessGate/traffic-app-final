@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Ibrahim OLAOYE. Tous droits réservés.
 import streamlit as st
 
 # Configuration de la page

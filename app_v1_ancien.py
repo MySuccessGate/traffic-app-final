@@ -1,4 +1,5 @@
-﻿import streamlit as st
+﻿# Copyright (c) 2026 Ibrahim OLAOYE. Tous droits réservés.
+import streamlit as st
 import pandas as pd
 import joblib
 import plotly.express as px
@@ -10,11 +11,11 @@ import seaborn as sns
 st.set_page_config(page_title="Trafic Smart City V1", page_icon="🚦", layout="wide")
 
 # Chargement du modèle et des données
-model = joblib.load("best_traffic_model.pkl")
+model = joblib.load("models/best_traffic_model.pkl")
 
 @st.cache_data
 def charger_donnees():
-    df = pd.read_csv("Metro_Interstate_Traffic_Volume.csv")
+    df = pd.read_csv("data/Metro_Interstate_Traffic_Volume.csv")
     df['date_time'] = pd.to_datetime(df['date_time'])
     df['hour'] = df['date_time'].dt.hour
     df['dayofweek'] = df['date_time'].dt.dayofweek
