@@ -1,0 +1,16 @@
+﻿streamlit
+pandas
+numpy
+scikit-learn
+xgboost
+prophet
+shap
+matplotlib
+seaborn
+plotly
+joblib
+requests
+beautifulsoup4
+openpyxl
+sqlalchemy
+pillow
