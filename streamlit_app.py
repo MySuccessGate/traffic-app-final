@@ -32,16 +32,13 @@ def page_accueil():
     """)
     # Vous pouvez ajouter ici vos boutons ou liens vers les autres pages si vous le souhaitez
 # Page 3 : Nouveau modèle (app_v2.py)
+page_v2 = st.Page("app_v2.py", title="Intelligence Décisionnelle (V2.0)", icon="🧠")
 pg = st.navigation({
     "Accueil": [st.Page(page_accueil, title="Page d'accueil", icon="🏠")],
     "Version 1.0": [page_v1],
     "Transition": [page_transition],
     "Version 2.0": [page_v2]
-})
-page_v2 = st.Page("app_v2.py", title="Intelligence Décisionnelle (V2.0)", icon="🧠")
 
-
-# On crée un menu de navigation
 pg = st.navigation({
     "Version 1.0": [page_v1],
     "Transition": [page_transition],
