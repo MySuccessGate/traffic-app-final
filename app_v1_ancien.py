@@ -11,7 +11,7 @@ import seaborn as sns
 st.set_page_config(page_title="Trafic Smart City V1", page_icon="🚦", layout="wide")
 
 # Chargement du modèle et des données
-model = joblib.load("best_traffic_model.pkl")
+model = xgb.XGBRegressor().load_model("best_traffic_model.json")
 
 @st.cache_data
 def charger_donnees():
