@@ -1,4 +1,5 @@
 ﻿# Copyright (c) 2026 Ibrahim OLAOYE. Tous droits réservés.
+from traductions import TEXTES as TRADUCTIONS
 import streamlit as st
 import pandas as pd
 import xgboost as xgb
@@ -9,6 +10,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Configuration de la page
+# Récupération de la langue depuis la session
+langue_actuelle = st.session_state.get('langue', 'Français')
+t = TRADUCTIONS[langue_actuelle]
 st.set_page_config(page_title="Trafic Smart City V1", page_icon="🚦", layout="wide")
 
 # Chargement du modèle et des données
