@@ -33,14 +33,13 @@ page_v1 = st.Page("app_v1_ancien.py", title="Ancien Modèle (V1)", icon="1️⃣
 page_transition = st.Page("page_transition.py", title="Mise à jour (V2.0)", icon="🔄")
 page_v2 = st.Page("app_v2.py", title="Intelligence Décisionnelle (V2.0)", icon="🧠")
 
-# Menu de navigation
-
-pg = st.navigation({
+# Menu de navigation (version liste simple)
+pg = st.navigation([
     st.Page(page_accueil, title="Page d'accueil", icon="🏠"),
     page_v1,
     page_transition,
     page_v2
-})
+])
 
 # Lancement de la page sélectionnée
 pg.run()
