@@ -9,7 +9,7 @@ if 'langue' not in st.session_state:
 
 langue_choisie = st.sidebar.selectbox(
     "🌐 Langue / Language",
-    ["Français", "English"],
+   ["Français", "English", "Русский", "中文", "العربية"],
     index=0
 )
 st.session_state.langue = langue_choisie
