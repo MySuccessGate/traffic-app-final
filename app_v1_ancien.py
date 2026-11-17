@@ -3,7 +3,7 @@ from traductions import TEXTES as TRADUCTIONS
 import streamlit as st
 import pandas as pd
 import xgboost as xgb
-import joblib
+import joblib 
 import plotly.express as px
 import numpy as np
 import matplotlib.pyplot as plt
@@ -51,10 +51,10 @@ st.sidebar.markdown("**Ibrahim OLAOYE** - Ingénieur Statisticien-Économètre |
 # ==========================================
 
 if menu == "🏠 Accueil":
-    st.title("🚦 Stratégie de trafic de Smart City")
-    st.markdown("Bienvenue sur l'application de prédiction du volume de trafic.")
-    st.markdown("Cette application utilise un modèle XGBoost entraîné sur les données de trafic (Metro Interstate Traffic Volume).")
-    st.subheader("Fonctionnalités :")
+    st.title(t["titre_app"])
+    st.markdown(t["bienvenue"])
+    st.markdown(t["description"])
+    st.subheader(t["fonctionnalites"])
     st.markdown("- Prédiction du trafic à une heure de vie\n- Visualisations exploratoires\n- Analyse de l'impact des conditions météo\n- Performance du modèle (R² = 0.946)")
 
 elif menu == "📊 Exploration":
