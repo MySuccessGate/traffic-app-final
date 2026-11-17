@@ -16,34 +16,31 @@ langue_choisie = st.sidebar.selectbox(
 )
 st.session_state.langue = langue_choisie
 
-# Gestion de la transition via les paramètres de l'URL
-if "page" not in st.query_params:
-    st.query_params["page"] = "v1"
+# Récupération des traductions
+langue_actuelle = st.session_state.get('langue', 'Français')
+t = TRADUCTIONS[langue_actuelle]
 
-# Définition de la page d'accueil (sans le menu de navigation)
-def page_accueil():
-    langue_actuelle = st.session_state.get('langue', 'Français')
-    t = TRADUCTIONS[langue_actuelle]
+# Définition du menu de navigation
+menu = st.sidebar.radio(
+    "Navigation",
+    ["🏠 Page d'accueil", "1️⃣ Ancien Modèle (V1)", "🔄 Mise à jour (V2.0)", "🧠 Intelligence Décisionnelle (V2.0)"]
+)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("**Ibrahim OLAOYE** - Ingénieur Statisticien-Économètre | Data Scientist")
+
+# Affichage de la page sélectionnée
+if menu == "🏠 Page d'accueil":
     st.title(t["titre_app"])
     st.markdown(t["bienvenue"])
     st.markdown(t["description"])
 
-# Définition des pages
-page_v1 = st.Page("app_v1_ancien.py", title="Ancien Modèle (V1)", icon="1️⃣")
-page_transition = st.Page("page_transition.py", title="Mise à jour (V2.0)", icon="🔄")
-page_v2 = st.Page("app_v2.py", title="Intelligence Décisionnelle (V2.0)", icon="🧠")
+elif menu == "1️⃣ Ancien Modèle (V1)":
+    # On exécute le fichier app_v1_ancien.py
+    exec(open("app_v1_ancien.py", encoding="utf-8").read())
 
-# Menu de navigation (version liste simple)
-pg = st.navigation([
-    st.Page(page_accueil, title="Page d'accueil", icon="🏠"),
-    page_v1,
-    page_transition,
-    page_v2
-])
+elif menu == "🔄 Mise à jour (V2.0)":
+    exec(open("page_transition.py", encoding="utf-8").read())
 
-# Lancement de la page sélectionnée
-pg.run()
-
-# Lancement de la page sélectionnée
-pg.run()
-
+elif menu == "🧠 Intelligence Décisionnelle (V2.0)":
+    exec(open("app_v2.py", encoding="utf-8").read())
