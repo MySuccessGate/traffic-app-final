@@ -57,15 +57,15 @@ if menu == "🏠 Accueil":
     st.subheader(t["fonctionnalites"])
     st.markdown(f"- {t['f1']}\n- {t['f2']}\n- {t['f3']}\n- {t['f4']}") # <--- C'est cette ligne qui compte !
 elif menu == "📊 Exploration":
-    st.title("Exploration des données")
+    st.title(t["explo_titre"])
     st.write(f"Nombre d'enregistrements : {len(df)}")
     st.write(df.head(10))
-    st.subheader("Statistiques descriptives")
+    st.subheader(t["explo_stats"])
     st.write(df.describe())
 
 elif menu == "📈 Visualisations":
-    st.title("Visualisations")
-    st.subheader("Évolution du trafic")
+    st.title(t["visu_titre"])
+    st.subheader(t["visu_evol"])
     fig1 = px.line(df, x='date_time', y='traffic_volume', title="Évolution du trafic dans le temps")
     st.plotly_chart(fig1, use_container_width=True)
     
@@ -75,8 +75,8 @@ elif menu == "📈 Visualisations":
     st.plotly_chart(fig2, use_container_width=True)
 
 elif menu == "🔍 Analyse":
-    st.title("Analyse avancée")
-    st.subheader("Matrice de corrélation")
+    st.title(t["ana_titre"])
+    st.subheader(t["ana_matrice"])
     # Sélection des colonnes numériques
     cols_num = ['temp', 'rain_1h', 'snow_1h', 'clouds_all', 'traffic_volume', 'hour', 'dayofweek']
     corr = df[cols_num].corr()
@@ -89,10 +89,10 @@ elif menu == "🔍 Analyse":
     st.plotly_chart(fig4, use_container_width=True)
 
 elif menu == "🧠 Modélisation":
-    st.title("Modélisation")
+    st.title(t["mod_titre"])
     st.write("Caractéristiques exactes usées par le modèle :")
     st.code("hour, dayofweek, temp, rain_1h, snow_1h, clouds_all")
-    st.subheader("Pourquoi XGBoost ?")
+    st.subheader(t["mod_pourquoi"])
     st.markdown("- Gère les non-linéarités\n- Robuste aux aberrants\n- Bonne généralisation sur séries temporelles")
     
     st.subheader("Importance des caractéristiques")
@@ -104,7 +104,7 @@ elif menu == "🧠 Modélisation":
     st.pyplot(fig5)
 
 elif menu == "🔮 Prédiction":
-    st.title("Prédiction du volume de trafic")
+    st.title(t["pred_titre"])
     col1, col2 = st.columns(2)
     with col1:
         hour = st.slider("Heure (0-23)", 0, 23, 12)
@@ -125,21 +125,21 @@ elif menu == "🔮 Prédiction":
         st.success(f"🚗 Trafic prédit : **{int(prediction)}** véhicules / heure")
 
 elif menu == "📉 Performance":
-    st.title("Performance du modèle")
+    st.title(t["perf_titre"])
     st.write("Métriques sur l'ensemble de test :")
     st.markdown("- **R²** : 0.946\n- **RMSE** : environ 450 véhicules/heure\n- **MAE** : environ 320 véhicules/heure")
 
 elif menu == "📋 Tableau de bord":
-    st.title("Tableau de bord interactif")
+    st.title(t["dash_titre"])
     st.write("Filtres et graphiques interactifs...")
 
 elif menu == "ℹ️ À propos":
-    st.title("À propos")
+   st.title(t["apropos_titre"])
     st.write("Prédiction du trafic urbain intelligent")
     st.markdown("- **Auteur** : Ibrahim OLAOYE\n- **Données** : Metro Interstate Traffic Volume\n- **Modèle** : XGBoost\n- **Interface** : Streamlit")
 
 elif menu == "📚 Documentation":
-    st.title("Documentation")
+    st.title(t["doc_titre"])
     st.write("Guide d'utilisation...")
     st.subheader("Limitations")
     st.write("- Le modèle ne prend pas en compte les jours fériés (colonne 'holiday' non usée).\n- La prédiction est une estimation.")
