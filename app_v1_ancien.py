@@ -55,8 +55,7 @@ if menu == "🏠 Accueil":
     st.markdown(t["bienvenue"])
     st.markdown(t["description"])
     st.subheader(t["fonctionnalites"])
-    st.markdown("- Prédiction du trafic à une heure de vie\n- Visualisations exploratoires\n- Analyse de l'impact des conditions météo\n- Performance du modèle (R² = 0.946)")
-
+    st.markdown(f"- {t['f1']}\n- {t['f2']}\n- {t['f3']}\n- {t['f4']}") # <--- C'est cette ligne qui compte !
 elif menu == "📊 Exploration":
     st.title("Exploration des données")
     st.write(f"Nombre d'enregistrements : {len(df)}")
