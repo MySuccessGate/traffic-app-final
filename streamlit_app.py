@@ -38,6 +38,7 @@ pg = st.navigation({
     "Version 1.0": [page_v1],
     "Transition": [page_transition],
     "Version 2.0": [page_v2]
+})
 
 
 # On lance la page sélectionnée
