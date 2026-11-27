@@ -1,26 +1,27 @@
-﻿# Copyright (c) 2026 Ibrahim OLAOYE. Tous droits réservés.
+# Copyright (c) 2026 Ibrahim OLAOYE. Tous droits réservés.
 from traductions import TEXTES as TRADUCTIONS
 import streamlit as st
+
+langue_actuelle = st.session_state.get('langue', 'Français')
+t = TRADUCTIONS[langue_actuelle]
+
 import pandas as pd
+import joblib
 import xgboost as xgb
-import joblib 
 import plotly.express as px
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Configuration de la page
-# Récupération de la langue depuis la session
-langue_actuelle = st.session_state.get('langue', 'Français')
-t = TRADUCTIONS[langue_actuelle]
 st.set_page_config(page_title="Trafic Smart City V1", page_icon="🚦", layout="wide")
 
-# Chargement du modèle et des données
 model = xgb.XGBRegressor()
+# CORRECTION ICI : plus de dossier "models/"
 model.load_model("best_traffic_model.json")
 
 @st.cache_data
 def charger_donnees():
+    # CORRECTION ICI : plus de dossier "data/"
     df = pd.read_csv("Metro_Interstate_Traffic_Volume.csv")
     df['date_time'] = pd.to_datetime(df['date_time'])
     df['hour'] = df['date_time'].dt.hour
@@ -29,36 +30,49 @@ def charger_donnees():
 
 df = charger_donnees()
 
-# ==========================================
-# MENU LATÉRAL
-# ==========================================
 st.sidebar.title("Navigation")
 menu = st.sidebar.radio("Aller à :", [
     "🏠 Accueil", "📊 Exploration", "📈 Visualisations", "🔍 Analyse", 
     "🧠 Modélisation", "🔮 Prédiction", "📉 Performance", 
     "📋 Tableau de bord", "ℹ️ À propos", "📚 Documentation"
 ])
+
 st.sidebar.markdown("---")
-# ... (votre menu)
-st.sidebar.markdown("---")
 
-# Signature en bas de la zone principale (à ajouter à la toute fin du fichier, hors des conditions "if menu == ...")
-
-st.sidebar.markdown("**Ibrahim OLAOYE** - Ingénieur Statisticien-Économètre | Data Scientist")
-
-# ==========================================
-# CONTENU DES ONGLETS
-# ==========================================
+st.sidebar.markdown(
+    """
+    <div style='text-align: center; font-size: 12px; color: #666666; height: auto;'>
+        <b>Ibrahim OLAOYE</b><br>
+        Ingénieur Statisticien-Économètre<br>
+        Data Scientist<br>
+        ibolaoye93@gmail.com
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
 if menu == "🏠 Accueil":
     st.title(t["titre_app"])
-    st.markdown(t["bienvenue"])
-    st.markdown(t["description"])
+    st.write(t["bienvenue"])
+    st.write(t["description"])
+    
     st.subheader(t["fonctionnalites"])
-    st.markdown(f"- {t['f1']}\n- {t['f2']}\n- {t['f3']}\n- {t['f4']}") # <--- C'est cette ligne qui compte !
+    st.markdown(f"""
+    - {t['f1']}
+    - {t['f2']}
+    - {t['f3']}
+    - {t['f4']}
+    """)
+    
+    st.markdown("---")
+    st.write(t["auteur"])
+
 elif menu == "📊 Exploration":
     st.title(t["explo_titre"])
-    st.write(f"Nombre d'enregistrements : {len(df)}")
+    st.write(f"{t['explo_nb']} : {len(df)}")
+    
+    df['date_time'] = pd.to_datetime(df['date_time'], errors='coerce') 
+    
     st.write(df.head(10))
     st.subheader(t["explo_stats"])
     st.write(df.describe())
@@ -66,39 +80,54 @@ elif menu == "📊 Exploration":
 elif menu == "📈 Visualisations":
     st.title(t["visu_titre"])
     st.subheader(t["visu_evol"])
-    fig1 = px.line(df, x='date_time', y='traffic_volume', title="Évolution du trafic dans le temps")
-    st.plotly_chart(fig1, use_container_width=True)
     
-    st.subheader("Trafic par moyen heure")
-    df_hour = df.groupby('hour')['traffic_volume'].mean().reset_index()
-    fig2 = px.bar(df_hour, x='hour', y='traffic_volume', title="Trafic moyen par heure")
-    st.plotly_chart(fig2, use_container_width=True)
+    fig1 = px.line(df, x='date_time', y='traffic_volume', title=t["visu_graph1"])
+    
+    fig1.update_layout(
+        xaxis_title=t["visu_axe_x"], 
+        yaxis_title=t["visu_axe_y"]
+    )
+    
+    st.plotly_chart(fig1, use_container_width=True)
 
 elif menu == "🔍 Analyse":
     st.title(t["ana_titre"])
     st.subheader(t["ana_matrice"])
-    # Sélection des colonnes numériques
+    
+    df['temp'] = pd.to_numeric(df['temp'], errors='coerce')
+    df['traffic_volume'] = pd.to_numeric(df['traffic_volume'], errors='coerce')
+    
     cols_num = ['temp', 'rain_1h', 'snow_1h', 'clouds_all', 'traffic_volume', 'hour', 'dayofweek']
+    
+    for col in cols_num:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+        
     corr = df[cols_num].corr()
+    
     fig3, ax = plt.subplots(figsize=(8, 6))
     sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
     st.pyplot(fig3)
+    
+    st.subheader(t["ana_trafic_temp"])
+    
+    fig5, ax5 = plt.subplots(figsize=(10, 6))
+    ax5.scatter(df['temp'], df['traffic_volume'], alpha=0.5, s=10, color='tab:blue')
+    ax5.set_title(t["ana_graph_temp"])
+    ax5.set_xlabel("Température")
+    ax5.set_ylabel("Volume de traffic")
+    st.pyplot(fig5)
 
-    st.subheader("Trafic en fonction de la température")
-    fig4 = px.scatter(df.sample(1000), x='temp', y='traffic_volume', opacity=0.5, title="Trafic vs Température")
-    st.plotly_chart(fig4, use_container_width=True)
-
+    
 elif menu == "🧠 Modélisation":
     st.title(t["mod_titre"])
-    st.write("Caractéristiques exactes usées par le modèle :")
+    st.write(t["mod_desc"])
     st.code("hour, dayofweek, temp, rain_1h, snow_1h, clouds_all")
     st.subheader(t["mod_pourquoi"])
-    st.markdown("- Gère les non-linéarités\n- Robuste aux aberrants\n- Bonne généralisation sur séries temporelles")
+    st.markdown("- Gère les non-linéarités\n- Robuste aux aberrants\n- Bonne généralisation")
     
-    st.subheader("Importance des caractéristiques")
-    # Simulation d'importance (puisque le modèle est chargé)
+    st.subheader(t["mod_importance"])
     features = ['hour', 'dayofweek', 'temp', 'rain_1h', 'snow_1h', 'clouds_all']
-    importances = [0.70, 0.15, 0.05, 0.03, 0.02, 0.05] # Valeurs approximatives basées sur vos captures
+    importances = [0.70, 0.15, 0.05, 0.03, 0.02, 0.05]
     fig5, ax = plt.subplots(figsize=(8, 4))
     sns.barplot(x=importances, y=features, ax=ax, color='purple')
     st.pyplot(fig5)
@@ -107,51 +136,73 @@ elif menu == "🔮 Prédiction":
     st.title(t["pred_titre"])
     col1, col2 = st.columns(2)
     with col1:
-        hour = st.slider("Heure (0-23)", 0, 23, 12)
-        day = st.selectbox("Jour", ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"])
-        temp = st.number_input("Température (°C)", -20.0, 50.0, 20.0)
+        hour = st.slider(t["pred_heure"], 0, 23, 12)
+        day = st.selectbox(t["pred_jour"], t["jours"])
+        temp = st.number_input(t["pred_temp"], -20.0, 50.0, 20.0)
     with col2:
-        rain = st.number_input("Pluie (mm/h)", 0.0, 20.0, 0.0)
-        snow = st.number_input("Neige (mm/h)", 0.0, 10.0, 0.0)
-        clouds = st.number_input("Nuages (%)", 0, 100, 50)
+        rain = st.number_input(t["pred_pluie"], 0.0, 20.0, 0.0)
+        snow = st.number_input(t["pred_neige"], 0.0, 10.0, 0.0)
+        clouds = st.number_input(t["pred_nuages"], 0, 100, 50)
         
-    jour_map = {"Lundi": 0, "Mardi": 1, "Mercredi": 2, "Jeudi": 3, "Vendredi": 4, "Samedi": 5, "Dimanche": 6}
-    dayofweek = jour_map[day]
+    dayofweek = t["jours"].index(day)
     
-    if st.button("🔮 Prédire le trafic"):
+    if st.button(t["pred_btn"]):
         input_data = pd.DataFrame([[hour, dayofweek, temp, rain, snow, clouds]], 
                                   columns=['hour', 'dayofweek', 'temp', 'rain_1h', 'snow_1h', 'clouds_all'])
         prediction = model.predict(input_data)[0]
-        st.success(f"🚗 Trafic prédit : **{int(prediction)}** véhicules / heure")
-
-elif menu == "📉 Performance":
-    st.title(t["perf_titre"])
-    st.write("Métriques sur l'ensemble de test :")
-    st.markdown("- **R²** : 0.946\n- **RMSE** : environ 450 véhicules/heure\n- **MAE** : environ 320 véhicules/heure")
+        st.success(f"{t['pred_resultat']} : **{int(prediction)}** véhicules / heure")
 
 elif menu == "📋 Tableau de bord":
     st.title(t["dash_titre"])
-    st.write("Filtres et graphiques interactifs...")
+    st.write(t["dash_desc"])
+    
+    jour_filtre = st.selectbox(t["pred_jour"], t["jours"])
+    
+    day_index = t["jours"].index(jour_filtre)
+    df_filtre = df[df['dayofweek'] == day_index]
+    
+    df_moyenne = df_filtre.groupby('hour')['traffic_volume'].mean().reset_index()
+    
+    fig_dash = px.line(df_moyenne, x='hour', y='traffic_volume', 
+                       title=t["dash_graph_titre"],
+                       labels={'hour': t["pred_heure"], 'traffic_volume': t["explo_graph"]},
+                       markers=True)
+    
+    st.plotly_chart(fig_dash, use_container_width=True)
 
+elif menu == "📉 Performance":
+    st.title(t["perf_titre"])
+    st.write(t["perf_desc"])
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric(t["perf_r2"], "0.946", delta="Excellent")
+    col2.metric(t["perf_rmse"], "450 véhicules/h", delta="-", delta_color="off")
+    col3.metric(t["perf_mae"], "320 véhicules/h", delta="-", delta_color="off")
+    
+    st.markdown("---")
+    
+    metrics = ['R²', 'RMSE (÷1000)', 'MAE (÷1000)']
+    values = [0.946, 0.450, 0.320]
+    colors = ['#2ecc71', '#e74c3c', '#f39c12']
+    
+    fig_perf = px.bar(x=metrics, y=values, 
+                      title=t["perf_graph_titre"],
+                      color=metrics,
+                      color_discrete_sequence=colors,
+                      text=values)
+    
+    fig_perf.update_traces(texttemplate='%{text:.3f}', textposition='outside')
+    fig_perf.update_layout(yaxis_range=[0, 1.1], showlegend=False)
+    
+    st.plotly_chart(fig_perf, use_container_width=True)
+    
 elif menu == "ℹ️ À propos":
-   st.title(t["apropos_titre"])
-    st.write("Prédiction du trafic urbain intelligent")
-    st.markdown("- **Auteur** : Ibrahim OLAOYE\n- **Données** : Metro Interstate Traffic Volume\n- **Modèle** : XGBoost\n- **Interface** : Streamlit")
+    st.title(t["apropos_titre"])
+    st.write(t["apropos_desc"])
+    st.markdown(f"- {t['apropos_data']}")
 
 elif menu == "📚 Documentation":
     st.title(t["doc_titre"])
-    st.write("Guide d'utilisation...")
-    st.subheader("Limitations")
-    st.write("- Le modèle ne prend pas en compte les jours fériés (colonne 'holiday' non usée).\n- La prédiction est une estimation.")
-    st.markdown("---")
-st.markdown(
-    """
-    <div style='text-align: center; font-family: Arial, sans-serif;'>
-        <span style='color: #6A0DAD; font-weight: bold; font-size: 15px;'>Ibrahim OLAOYE</span> 
-        <span style='color: #555555;'>– Ingénieur Statisticien-Économètre | Data Scientist</span><br>
-        <span style='color: #1E90FF;'>ibolaoye93@gmail.com</span> 
-        <span style='color: #FF0000;'>| +229 0196958344</span>
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
+    st.write(t["doc_desc"])
+    st.subheader(t["doc_limit_titre"])
+    st.write(f"{t['doc_limit_1']}\n{t['doc_limit_2']}")
